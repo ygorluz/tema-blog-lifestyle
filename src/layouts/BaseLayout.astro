@@ -137,9 +137,9 @@ const socialImage = image?.startsWith('http') ? image : image ? new URL(image, s
     <nav class="navbar navbar-expand-lg">
       <div class="container-xl">
         <!-- logo -->
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand d-inline-flex align-items-center" href="/">
           {siteConfig.logo ? (
-            <img src={siteConfig.logo} alt={siteConfig.name} />
+            <img src={siteConfig.logo} alt={siteConfig.name} style={`height: ${siteConfig.logoHeight || 38}px; max-height: ${siteConfig.logoHeight || 38}px; width: auto; max-width: 220px; object-fit: contain; display: inline-block;`} />
           ) : (
             <span style="font-family: var(--walker-font-heading); font-weight: 700; font-size: 1.5rem; color: var(--walker-dark);">{siteConfig.name}</span>
           )}
@@ -276,9 +276,9 @@ const socialImage = image?.startsWith('http') ? image : image ? new URL(image, s
 <!-- canvas menu -->
 <div class="canvas-menu d-flex align-items-end flex-column">
   <button type="button" class="btn-close" aria-label="Close"></button>
-  <div class="logo">
+  <div class="logo text-center mb-4">
     {siteConfig.logo ? (
-      <img src={siteConfig.logo} alt={siteConfig.name} />
+      <img src={siteConfig.logo} alt={siteConfig.name} style={`height: ${siteConfig.logoHeight || 42}px; max-height: ${siteConfig.logoHeight || 42}px; width: auto; max-width: 180px; object-fit: contain; margin: 0 auto; display: block;`} />
     ) : (
       <span style="font-family: var(--walker-font-heading); font-weight: 700; font-size: 1.5rem; color: var(--walker-dark);">{siteConfig.name}</span>
     )}
