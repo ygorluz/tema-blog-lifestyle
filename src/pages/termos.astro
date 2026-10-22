@@ -1,59 +1,50 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import Sidebar from '../components/Sidebar.astro';
+import BunzoLayout from '../layouts/BunzoLayout.astro';
+import Breadcrumb from '../components/bunzo/Breadcrumb.astro';
 import { readData } from '../lib/readData';
-const siteConfig = readData('siteConfig.json');
-const termsData = readData('terms.json');
+
+const siteConfig = readData('siteConfig.json', { name: 'Arte Plural' });
+const legalData = readData('terms.json', { title: 'Termos de Uso', content: [] });
+
+const pageTitle = legalData.hero?.title || legalData.title || "Termos de Uso";
+const pageDesc = legalData.hero?.desc || legalData.description || `Termos de uso do ${siteConfig.name || 'site'}`;
+
+const rawContent = legalData.content;
+const sections = Array.isArray(rawContent) 
+  ? rawContent 
+  : (Array.isArray(legalData.sections) ? legalData.sections : []);
+
+const htmlContent = !Array.isArray(rawContent)
+  ? (rawContent?.missionText || rawContent?.text || rawContent?.html || (typeof rawContent === 'string' ? rawContent : ''))
+  : (legalData.missionText || legalData.html || legalData.htmlContent || '');
 ---
 
-<BaseLayout title={termsData.title} description={`Leia nossos ${termsData.title.toLowerCase()} e condições de uso.`}>
+<BunzoLayout title={`${pageTitle} - ${siteConfig.name || ''}`} description={pageDesc}>
+  <Breadcrumb slug={pageTitle} />
 
-  <!-- page header -->
-  <section class="page-header">
-    <div class="container-xl">
-      <div class="text-center">
-        <h1 class="mt-0 mb-2">{termsData.title}</h1>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb justify-content-center mb-0">
-            <li class="breadcrumb-item"><a href="/">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{termsData.title}</li>
-          </ol>
-        </nav>
+  <section class="py-section bg-white font-base">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="content prose prose-lg prose-primary max-w-none space-y-8">
+        <h1 class="text-3xl md:text-4xl font-bold font-heading text-heading mb-6">{pageTitle}</h1>
+
+        {sections.length > 0 && sections.map((section: any) => {
+          const isHtml = typeof section.text === 'string' && /<[a-z][\s\S]*>/i.test(section.text);
+          return (
+            <div class="legal-section mb-6">
+                {section.title && <h2 class="text-2xl font-bold mb-3">{section.title}</h2>}
+                {isHtml ? (
+                  <div class="text-gray-600 leading-relaxed space-y-4" set:html={section.text} />
+                ) : (
+                  <div class="text-gray-600 leading-relaxed whitespace-pre-line">{section.text}</div>
+                )}
+            </div>
+          );
+        })}
+
+        {htmlContent && (
+            <div class="text-gray-600 leading-relaxed space-y-4 font-normal" set:html={htmlContent} />
+        )}
       </div>
     </div>
   </section>
-
-  <!-- section main content -->
-  <section class="main-content">
-    <div class="container-xl">
-      <div class="row gy-4">
-
-        <div class="col-lg-8">
-          <div class="page-content bordered rounded padding-30">
-
-            {termsData.lastUpdated && (
-              <p class="mb-4" style="color:#8F9BAD;font-size:0.9rem;">Última atualização: {termsData.lastUpdated}</p>
-            )}
-
-            {termsData.content?.map(section => (
-              <>
-                <h4>{section.title}</h4>
-                <p>{section.text}</p>
-              </>
-            ))}
-
-            <hr class="my-4" />
-            <p>Para dúvidas sobre estes termos, entre em <a href="/contato">contato conosco</a>.</p>
-
-          </div>
-        </div>
-
-        <div class="col-lg-4">
-          <Sidebar />
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-</BaseLayout>
+</BunzoLayout>
